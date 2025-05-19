@@ -45,8 +45,10 @@ jobs:
             # ===== Lua 5.4 (EL-9 SRPM) =============================================
             rpm -ivh /home/builder/lua-5.4.4-4.el9.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/lua.spec
-            dnf -y install $TOPDIR/RPMS/*/lua-[0-9]*.rpm \
-                           $TOPDIR/RPMS/*/lua-devel-[0-9]*.rpm
+            dnf -y install \
+                  $TOPDIR/RPMS/*/lua-libs-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/lua-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/lua-devel-[0-9]*.rpm
           
             # ===== libmemcached 1.0.18 (EL-8 SRPM) =================================
             rpm -ivh /home/builder/libmemcached-1.0.18-17.el8.src.rpm
