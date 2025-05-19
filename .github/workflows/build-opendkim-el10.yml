@@ -53,8 +53,8 @@ jobs:
             # ===== libmemcached 1.0.18 (EL-8 SRPM) =================================
             rpm -ivh /home/builder/libmemcached-1.0.18-17.el8.src.rpm
             rpmbuild --define "_topdir $TOPDIR" \
-                    -ba $TOPDIR/SPECS/libmemcached.spec \
-                    --without docs --without dtrace --without tests
+                    --without doc --without dtrace --without tests \
+                    -ba $TOPDIR/SPECS/libmemcached.spec
             dnf -y install $TOPDIR/RPMS/*/libmemcached-[0-9]*.rpm \
                            $TOPDIR/RPMS/*/libmemcached-devel-[0-9]*.rpm
 
