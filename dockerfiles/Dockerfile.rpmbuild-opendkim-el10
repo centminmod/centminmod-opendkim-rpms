@@ -36,6 +36,9 @@ RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Pack
     curl -LO https://mirror.stream.centos.org/10-stream/AppStream/source/tree/Packages/perl-Test-Harness-3.48-512.el10.src.rpm && \
     curl -LO https://mirror.stream.centos.org/10-stream/AppStream/source/tree/Packages/perl-Test-Simple-1.302199-513.el10.src.rpm && \
     curl -LO https://mirror.stream.centos.org/10-stream/BaseOS/source/tree/Packages/selinux-policy-40.13.30-1.el10.src.rpm && \
+    curl -LO https://mirror.stream.centos.org/10-stream/AppStream/source/tree/Packages/checkpolicy-3.8-1.el10.src.rpm && \
+    curl -LO https://mirror.stream.centos.org/10-stream/AppStream/source/tree/Packages/groff-1.23.0-10.el10.src.rpm && \
+    curl -LO https://mirror.stream.centos.org/10-stream/AppStream/source/tree/Packages/policycoreutils-3.8-1.el10.src.rpm && \
     curl -LO https://vault.almalinux.org/10-kitten/AppStream/Source/Packages/memcached-1.6.23-7.el10.src.rpm && \
     curl -LO https://mirror.stream.centos.org/10-stream/CRB/source/tree/Packages/python-sphinx-7.2.6-10.el10.src.rpm && \
     curl -LO https://mirror.stream.centos.org/10-stream/AppStream/source/tree/Packages/systemtap-5.3-1.el10.src.rpm && \

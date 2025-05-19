@@ -50,6 +50,20 @@ jobs:
             dnf -y install \
                   $TOPDIR/RPMS/*/perl-Test-Harness-[0-9]*.rpm \
                   $TOPDIR/RPMS/*/perl-Test-Simple-[0-9]*.rpm
+
+            # ===== checkpolicy, groff & policycoreutils (EL-10 SRPMs) =====
+ 
+            rpm -ivh /home/builder/checkpolicy-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/checkpolicy.spec
+            dnf -y install $TOPDIR/RPMS/*/checkpolicy-[0-9]*.rpm
+ 
+            rpm -ivh /home/builder/groff-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/groff.spec
+            dnf -y install $TOPDIR/RPMS/*/groff-[0-9]*.rpm
+ 
+            rpm -ivh /home/builder/policycoreutils-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/policycoreutils.spec
+            dnf -y install $TOPDIR/RPMS/*/policycoreutils-devel-[0-9]*.rpm
           
             # ===== selinux-policy (Base policy only) ===============================
             rpm -ivh /home/builder/selinux-policy-*.src.rpm
