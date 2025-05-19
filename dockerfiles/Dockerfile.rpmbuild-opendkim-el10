@@ -18,6 +18,7 @@ RUN dnf -y groupinstall "Development Tools" && \
        ncurses-devel readline-devel docbook2X doxygen \
        automake autoconf gettext gettext-devel libtool \
        chrpath libstdc++-static procmail unzip sed \
+       perl perl-ExtUtils-MakeMaker perl-Time-HiRes \
        libevent-devel cyrus-sasl-devel libdb-devel \
        freetds-devel \
        systemd which curl && \
