@@ -31,7 +31,9 @@ jobs:
 
             # ===== Firebird ========================================================
             rpm -ivh /home/builder/firebird-*.src.rpm
-            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/firebird.spec
+            rpmbuild --define "_topdir $TOPDIR" \
+                    --define "_smp_mflags -j1" \
+                    -ba $TOPDIR/SPECS/firebird.spec
             dnf -y install \
                   $TOPDIR/RPMS/*/firebird-utils-[0-9]*.rpm \
                   $TOPDIR/RPMS/*/firebird-[0-9]*.rpm \
