@@ -42,6 +42,18 @@ jobs:
                   $TOPDIR/RPMS/*/libfbclient2-devel-[0-9]*.rpm \
                   $TOPDIR/RPMS/*/libib-util-[0-9]*.rpm
 
+            # ===== Lua 5.4 (EL-9 SRPM) =============================================
+            rpm -ivh /home/builder/lua-5.4.4-4.el9.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/lua.spec
+            dnf -y install $TOPDIR/RPMS/*/lua-[0-9]*.rpm \
+                           $TOPDIR/RPMS/*/lua-devel-[0-9]*.rpm
+          
+            # ===== libmemcached 1.0.18 (EL-8 SRPM) =================================
+            rpm -ivh /home/builder/libmemcached-1.0.18-17.el8.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/libmemcached.spec
+            dnf -y install $TOPDIR/RPMS/*/libmemcached-[0-9]*.rpm \
+                           $TOPDIR/RPMS/*/libmemcached-devel-[0-9]*.rpm
+
             # ===== OpenDBX (with Firebird, without FreeTDS) ========================
             rpm -ivh /home/builder/opendbx-*.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendbx.spec
