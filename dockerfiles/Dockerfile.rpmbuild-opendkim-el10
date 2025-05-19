@@ -31,7 +31,7 @@ USER builder
 # ─── Download all SRPMs we will rebuild ──────────────────────────
 RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/l/libtomcrypt-1.18.2-12.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/f/firebird-4.0.0.2496-2.el9.src.rpm && \
-    curl -LO https://repo.almalinux.org/vault/9/CRB/Source/Packages/lua-5.4.4-4.el9.src.rpm && \
+    curl -LO https://vault.almalinux.org/9/BaseOS/Source/Packages/lua-5.4.4-4.el9.src.rpm && \
     curl -LO https://repo.almalinux.org/vault/8/PowerTools/Source/Packages/libmemcached-1.0.18-17.el8.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendbx-1.4.6-38.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendkim-2.11.0-0.36.el9.src.rpm
