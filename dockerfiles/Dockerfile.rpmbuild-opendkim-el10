@@ -1,31 +1,29 @@
+#
+# Build-time image for AL10 OpenDBX → OpenDKIM RPMs
+#
 FROM almalinux/10-kitten-init
 
-# Enable CRB and EPEL repositories
-RUN dnf -y install dnf-plugins-core \
-    && dnf -y config-manager --set-enabled crb \
-    && dnf -y install epel-release \
-    && dnf -y install curl ca-certificates \
-    && dnf clean all
+# ─────────────── Repos ───────────────
+RUN dnf -y install dnf-plugins-core && \
+    dnf -y config-manager --set-enabled crb && \
+    dnf -y install epel-release && \
+    dnf clean all
 
-# Install build tools and OpenDKIM build dependencies
-RUN dnf -y groupinstall "Development Tools" \
-    && dnf -y install rpm-build rpmdevtools redhat-rpm-config \
-       openssl-devel openldap-devel sendmail-milter-devel libbsd-devel opendbx-devel \
-       systemd which curl \
-    && dnf clean all
+# ─────────── Base tool-chain ──────────
+RUN dnf -y groupinstall "Development Tools" && \
+    dnf -y install rpm-build rpmdevtools redhat-rpm-config \
+       openssl-devel openldap-devel sendmail-milter-devel libbsd-devel \
+       mariadb-connector-c mariadb-connector-c-devel libpq-devel \
+       sqlite-devel firebird-devel freetds-devel ncurses-devel readline-devel \
+       docbook2X doxygen automake gettext gettext-devel libtool \
+       systemd which curl && \
+    dnf clean all
 
-# Create builder user and set up RPM build environment
-RUN useradd -m builder \
-    && su - builder -c "rpmdev-setuptree"
-
-WORKDIR /home/builder/rpmbuild
+# ──────── Non-root builder setup ──────
+RUN useradd -m builder && su - builder -c "rpmdev-setuptree"
+WORKDIR /home/builder
 USER builder
 
-# Download EPEL9 OpenDKIM SRPM and extract spec and sources (no spec modifications)
-RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/\
-opendkim-2.11.0-0.36.el9.src.rpm \
-    && rpm2cpio opendkim-2.11.0-0.36.el9.src.rpm | cpio -idmv \
-    && rm -f opendkim-2.11.0-0.36.el9.src.rpm \
-    && mkdir -p SPECS SOURCES \
-    && mv opendkim.spec SPECS/ \
-    && mv opendkim* SOURCES/
+# ───────────── SRPM payloads ──────────
+RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendbx-1.4.6-38.el9.src.rpm && \
+    curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendkim-2.11.0-0.36.el9.src.rpm

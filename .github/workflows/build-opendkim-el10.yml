@@ -1,4 +1,4 @@
-name: Build OpenDKIM EL10 RPMs
+name: Build OpenDBX + OpenDKIM EL10 RPMs
 
 on:
   workflow_dispatch:
@@ -7,36 +7,42 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: |
-          docker build \
-            -f dockerfiles/Dockerfile.rpmbuild-opendkim-el10 \
-            -t opendkim-el10-build:latest .
+    - name: Build builder image
+      run: |
+        docker build \
+          -f dockerfiles/Dockerfile.rpmbuild-opendkim-el10 \
+          -t opendkim-el10-build:latest .
 
-      - name: Create build directory
-        run: mkdir -p output
+    - run: mkdir -p output
 
-      - name: Run rpmbuild container
-        run: |
-          docker run --rm \
-            -u root \
-            -v ${{ github.workspace }}/output:/output \
-            opendkim-el10-build:latest \
-            bash -c "
-              set -euo pipefail;
-              rpmbuild --define '_topdir /home/builder/rpmbuild' -ba /home/builder/rpmbuild/SPECS/opendkim.spec;
-              cp /home/builder/rpmbuild/RPMS/*/* /output/;
-              cp /home/builder/rpmbuild/SRPMS/* /output/;
-              ls -lAh /output/;
-            "
+    - name: Rebuild SRPMs and collect artefacts
+      run: |
+        docker run --rm -u root \
+          -v ${{ github.workspace }}/output:/output \
+          opendkim-el10-build:latest \
+          bash -c '
+            set -euo pipefail
+            # Build OpenDBX
+            rpm -ivh /home/builder/opendbx-*.src.rpm
+            rpmbuild --define "_topdir /home/builder/rpmbuild" \
+                     -ba /home/builder/rpmbuild/SPECS/opendbx.spec
+            dnf -y install /home/builder/rpmbuild/RPMS/*/opendbx-[0-9]*.rpm \
+                           /home/builder/rpmbuild/RPMS/*/opendbx-devel-[0-9]*.rpm
 
-      - name: Upload RPM artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: opendkim-el10-rpms
-          path: |
-            output/*.rpm
-            output/*.src.rpm
+            # Build OpenDKIM (requires opendbx-devel now present)
+            rpm -ivh /home/builder/opendkim-*.src.rpm
+            rpmbuild --define "_topdir /home/builder/rpmbuild" \
+                     -ba /home/builder/rpmbuild/SPECS/opendkim.spec
+
+            # Copy ALL built RPMs/SRPMs out
+            cp /home/builder/rpmbuild/RPMS/*/* /output/
+            cp /home/builder/rpmbuild/SRPMS/* /output/
+            ls -lAh /output/
+          '
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: opendkim-opendbx-el10-rpms
+        path: output/*.rpm
