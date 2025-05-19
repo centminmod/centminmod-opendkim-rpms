@@ -25,7 +25,7 @@ RUN dnf -y groupinstall "Development Tools" && \
        memcached python-sphinx systemtap systemtap-sdt-devel libmemcached opendbx opendbx-devel flex-static \
        libselinux-devel libsepol-static selinux-policy-devel \
        pyproject-rpm-macros python3-devel python3-test texlive-collection-fontsrecommended \ 
-       texlive-collection-latex texlive-* python3-flit-core \
+       texlive-collection-latex texlive-* python3-flit-core python3-cython python3-pytest python3-* \
        systemd which curl --skip-broken && \
     dnf clean all
 
