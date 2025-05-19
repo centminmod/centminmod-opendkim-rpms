@@ -1,14 +1,17 @@
+#
+# Build Firebird 4 → OpenDBX → OpenDKIM RPMs for AlmaLinux 10
+#
 FROM almalinux/10-kitten-init
 
-# ─── Repositories ───────────────────────────────────────────────
+# ── Repositories ────────────────────────────────────────────────
 RUN dnf -y install dnf-plugins-core && \
     dnf -y config-manager --set-enabled crb && \
     dnf -y install epel-release && dnf clean all
 
-# ─── Core build tool-chain & common -devel packages ─────────────
+# ── Base tool-chain & common BuildRequires ─────────────────────
 RUN dnf -y groupinstall "Development Tools" && \
     dnf -y install rpm-build rpmdevtools redhat-rpm-config \
-       cmake ninja-build make gcc-c++ \
+       cmake ninja-build gcc-c++ make \
        openssl-devel openldap-devel sendmail-milter-devel libbsd-devel \
        mariadb-connector-c mariadb-connector-c-devel libpq-devel sqlite-devel \
        libicu-devel libtommath-devel libedit-devel libxml2-devel zlib-devel \
@@ -17,12 +20,12 @@ RUN dnf -y groupinstall "Development Tools" && \
        systemd which curl && \
     dnf clean all
 
-# ─── Non-root builder & rpmbuild tree ───────────────────────────
+# ── Non-root builder (for SRPM storage) ────────────────────────
 RUN useradd -m builder && su - builder -c "rpmdev-setuptree"
 WORKDIR /home/builder
 USER builder
 
-# ─── Download SRPMs ─────────────────────────────────────────────
+# ── Download SRPMs we will rebuild ─────────────────────────────
 RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/f/firebird-4.0.0.2496-2.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendbx-1.4.6-38.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendkim-2.11.0-0.36.el9.src.rpm

@@ -12,7 +12,7 @@ jobs:
         docker build -f dockerfiles/Dockerfile.rpmbuild-opendkim-el10 \
           -t mailstack-el10-build:latest .
 
-    - run: mkdir -p output
+    - run: mkdir -p output            # for artefacts
 
     - name: Rebuild SRPMs in sequence
       run: |
@@ -21,25 +21,24 @@ jobs:
           mailstack-el10-build:latest \
           bash -c '
             set -euo pipefail
-            TOPDIR=/home/builder/rpmbuild
+            TOPDIR=/root/rpmbuild
 
-            # --- Firebird -----------------------------------------------------------------
+            # -------- Firebird --------------------------------------------------
             rpm -ivh /home/builder/firebird-*.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/firebird.spec
             dnf -y install $TOPDIR/RPMS/*/firebird-{common,libs,devel}-*.rpm
 
-            # --- OpenDBX (with Firebird, without FreeTDS) --------------------------------
+            # -------- OpenDBX (Firebird yes, FreeTDS no) ------------------------
             rpm -ivh /home/builder/opendbx-*.src.rpm
-            rpmbuild --define "_topdir $TOPDIR" \
-                     -ba $TOPDIR/SPECS/opendbx.spec --without freetds
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendbx.spec --without freetds
             dnf -y install $TOPDIR/RPMS/*/opendbx-{devel,*[0-9]}.rpm
 
-            # --- OpenDKIM -----------------------------------------------------------------
+            # -------- OpenDKIM --------------------------------------------------
             rpm -ivh /home/builder/opendkim-*.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendkim.spec
 
-            # --- Collect artefacts --------------------------------------------------------
-            cp $TOPDIR/RPMS/*/* $TOPDIR/SRPMS/* /output/
+            # -------- Collect artefacts ----------------------------------------
+            cp $TOPDIR/RPMS/*/*  $TOPDIR/SRPMS/*  /output/
             ls -lAh /output/
           '
 
