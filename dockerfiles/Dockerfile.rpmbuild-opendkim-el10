@@ -1,29 +1,28 @@
-#
-# Build-time image for AL10 OpenDBX → OpenDKIM RPMs
-#
 FROM almalinux/10-kitten-init
 
-# ─────────────── Repos ───────────────
+# ─── Repositories ───────────────────────────────────────────────
 RUN dnf -y install dnf-plugins-core && \
     dnf -y config-manager --set-enabled crb && \
-    dnf -y install epel-release && \
-    dnf clean all
+    dnf -y install epel-release && dnf clean all
 
-# ─────────── Base tool-chain ──────────
+# ─── Core build tool-chain & common -devel packages ─────────────
 RUN dnf -y groupinstall "Development Tools" && \
     dnf -y install rpm-build rpmdevtools redhat-rpm-config \
+       cmake ninja-build make gcc-c++ \
        openssl-devel openldap-devel sendmail-milter-devel libbsd-devel \
-       mariadb-connector-c mariadb-connector-c-devel libpq-devel \
-       sqlite-devel firebird-devel freetds-devel ncurses-devel readline-devel \
-       docbook2X doxygen automake gettext gettext-devel libtool \
+       mariadb-connector-c mariadb-connector-c-devel libpq-devel sqlite-devel \
+       libicu-devel libtommath-devel libedit-devel libxml2-devel zlib-devel \
+       ncurses-devel readline-devel docbook2X doxygen \
+       automake gettext gettext-devel libtool \
        systemd which curl && \
     dnf clean all
 
-# ──────── Non-root builder setup ──────
+# ─── Non-root builder & rpmbuild tree ───────────────────────────
 RUN useradd -m builder && su - builder -c "rpmdev-setuptree"
 WORKDIR /home/builder
 USER builder
 
-# ───────────── SRPM payloads ──────────
-RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendbx-1.4.6-38.el9.src.rpm && \
+# ─── Download SRPMs ─────────────────────────────────────────────
+RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/f/firebird-4.0.0.2496-2.el9.src.rpm && \
+    curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendbx-1.4.6-38.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendkim-2.11.0-0.36.el9.src.rpm

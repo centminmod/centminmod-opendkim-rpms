@@ -1,7 +1,5 @@
-name: Build OpenDBX + OpenDKIM EL10 RPMs
-
-on:
-  workflow_dispatch:
+name: Build Firebird + OpenDBX + OpenDKIM EL10 RPMs
+on: { workflow_dispatch: }
 
 jobs:
   build:
@@ -11,38 +9,41 @@ jobs:
 
     - name: Build builder image
       run: |
-        docker build \
-          -f dockerfiles/Dockerfile.rpmbuild-opendkim-el10 \
-          -t opendkim-el10-build:latest .
+        docker build -f dockerfiles/Dockerfile.rpmbuild-opendkim-el10 \
+          -t mailstack-el10-build:latest .
 
     - run: mkdir -p output
 
-    - name: Rebuild SRPMs and collect artefacts
+    - name: Rebuild SRPMs in sequence
       run: |
         docker run --rm -u root \
           -v ${{ github.workspace }}/output:/output \
-          opendkim-el10-build:latest \
+          mailstack-el10-build:latest \
           bash -c '
             set -euo pipefail
-            # Build OpenDBX
+            TOPDIR=/home/builder/rpmbuild
+
+            # --- Firebird -----------------------------------------------------------------
+            rpm -ivh /home/builder/firebird-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/firebird.spec
+            dnf -y install $TOPDIR/RPMS/*/firebird-{common,libs,devel}-*.rpm
+
+            # --- OpenDBX (with Firebird, without FreeTDS) --------------------------------
             rpm -ivh /home/builder/opendbx-*.src.rpm
-            rpmbuild --define "_topdir /home/builder/rpmbuild" \
-                     -ba /home/builder/rpmbuild/SPECS/opendbx.spec
-            dnf -y install /home/builder/rpmbuild/RPMS/*/opendbx-[0-9]*.rpm \
-                           /home/builder/rpmbuild/RPMS/*/opendbx-devel-[0-9]*.rpm
+            rpmbuild --define "_topdir $TOPDIR" \
+                     -ba $TOPDIR/SPECS/opendbx.spec --without freetds
+            dnf -y install $TOPDIR/RPMS/*/opendbx-{devel,*[0-9]}.rpm
 
-            # Build OpenDKIM (requires opendbx-devel now present)
+            # --- OpenDKIM -----------------------------------------------------------------
             rpm -ivh /home/builder/opendkim-*.src.rpm
-            rpmbuild --define "_topdir /home/builder/rpmbuild" \
-                     -ba /home/builder/rpmbuild/SPECS/opendkim.spec
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendkim.spec
 
-            # Copy ALL built RPMs/SRPMs out
-            cp /home/builder/rpmbuild/RPMS/*/* /output/
-            cp /home/builder/rpmbuild/SRPMS/* /output/
+            # --- Collect artefacts --------------------------------------------------------
+            cp $TOPDIR/RPMS/*/* $TOPDIR/SRPMS/* /output/
             ls -lAh /output/
           '
 
     - uses: actions/upload-artifact@v4
       with:
-        name: opendkim-opendbx-el10-rpms
+        name: firebird-opendbx-opendkim-el10-rpms
         path: output/*.rpm
