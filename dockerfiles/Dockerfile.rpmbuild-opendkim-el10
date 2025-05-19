@@ -23,7 +23,7 @@ RUN dnf -y groupinstall "Development Tools" && \
        freetds-devel libmemcached-awesome libmemcached-awesome-devel \
        libtomcrypt-devel firebird firebird-devel lua lua-devel selinux-policy groff policycoreutils \ 
        memcached python-sphinx systemtap systemtap-sdt-devel libmemcached opendbx opendbx-devel flex-static \
-       libselinux-devel libsepol-static \
+       libselinux-devel libsepol-static selinux-policy-devel \
        systemd which curl --skip-broken && \
     dnf clean all
 
