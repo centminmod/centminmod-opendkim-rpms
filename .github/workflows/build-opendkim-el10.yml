@@ -1,4 +1,4 @@
-name: Build OpenDKIM EL10 RPM
+name: Build OpenDKIM EL10 RPMs
 
 on:
   workflow_dispatch:
