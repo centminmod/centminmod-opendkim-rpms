@@ -1,0 +1,74 @@
+name: Build OpenDKIM EL10 RPMs v2
+on: { workflow_dispatch: }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build builder image
+      run: |
+        docker build -f dockerfiles/Dockerfile.rpmbuild-opendkim-el10 \
+          -t mailstack-el10-build:latest .
+
+    - run: mkdir -p output
+
+    - name: Rebuild SRPMs in dependency order
+      run: |
+        docker run --rm -u root \
+          -v ${{ github.workspace }}/output:/output \
+          mailstack-el10-build:latest \
+          bash -c '
+            set -euo pipefail
+            TOPDIR=/root/rpmbuild
+
+            # ===== libtomcrypt ====================================================
+            rpm -ivh /home/builder/libtomcrypt-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/libtomcrypt.spec
+            dnf -y install $TOPDIR/RPMS/*/libtomcrypt-*.rpm \
+                           $TOPDIR/RPMS/*/libtomcrypt-devel-*.rpm
+
+            # ===== Firebird ========================================================
+            rpm -ivh /home/builder/firebird-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" \
+                    --define "_smp_mflags -j1" \
+                    -ba $TOPDIR/SPECS/firebird.spec
+            dnf -y install \
+                  $TOPDIR/RPMS/*/firebird-utils-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/firebird-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/firebird-devel-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/libfbclient2-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/libfbclient2-devel-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/libib-util-[0-9]*.rpm
+
+            # ===== memcached, python3-sphinx, systemtap-sdt-devel (EL-10 SRPMs) =====
+          
+            rpm -ivh /home/builder/memcached-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/memcached.spec
+            dnf -y install $TOPDIR/RPMS/*/memcached-[0-9]*.rpm
+          
+            rpm -ivh /home/builder/python-sphinx-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/python-sphinx.spec
+            dnf -y install $TOPDIR/RPMS/*/python3-sphinx-[0-9]*.rpm
+          
+            # ===== OpenDBX (with Firebird, without FreeTDS) ========================
+            rpm -ivh /home/builder/opendbx-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendbx.spec
+            dnf -y install \
+                  $TOPDIR/RPMS/*/opendbx-devel-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/opendbx-[0-9]*.rpm
+
+            # ===== OpenDKIM ========================================================
+            rpm -ivh /home/builder/opendkim-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendkim.spec
+
+            # ===== Collect artefacts ==============================================
+            cp $TOPDIR/RPMS/*/*  $TOPDIR/SRPMS/*  /output/
+            ls -lAh /output/
+          '
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: mailstack-el10-rpms
+        path: output/*.rpm

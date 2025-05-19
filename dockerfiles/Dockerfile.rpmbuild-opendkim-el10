@@ -20,9 +20,9 @@ RUN dnf -y groupinstall "Development Tools" && \
        chrpath libstdc++-static procmail unzip sed \
        perl perl-ExtUtils-MakeMaker perl-Time-HiRes \
        libevent-devel cyrus-sasl-devel libdb-devel \
-       freetds-devel \
+       freetds-devel libmemcached-awesome libmemcached-awesome-devel \
        libtomcrypt-devel firebird firebird-devel lua lua-devel selinux-policy groff policycoreutils \ 
-       memcached python-sphinx systemtap libmemcached opendbx opendbx-devel flex-static \
+       memcached python-sphinx systemtap systemtap-sdt-devel libmemcached opendbx opendbx-devel flex-static \
        libselinux-devel libsepol-static \
        systemd which curl --skip-broken && \
     dnf clean all
