@@ -49,6 +49,20 @@ jobs:
                   $TOPDIR/RPMS/*/lua-libs-[0-9]*.rpm \
                   $TOPDIR/RPMS/*/lua-[0-9]*.rpm \
                   $TOPDIR/RPMS/*/lua-devel-[0-9]*.rpm
+
+            # ===== memcached, python3-sphinx, systemtap-sdt-devel (EL-10 SRPMs) =====
+          
+            rpm -ivh /home/builder/memcached-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/memcached.spec
+            dnf -y install $TOPDIR/RPMS/*/memcached-[0-9]*.rpm
+          
+            rpm -ivh /home/builder/python-sphinx-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/python-sphinx.spec
+            dnf -y install $TOPDIR/RPMS/*/python3-sphinx-[0-9]*.rpm
+          
+            rpm -ivh /home/builder/systemtap-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/systemtap.spec
+            dnf -y install $TOPDIR/RPMS/*/systemtap-sdt-devel-[0-9]*.rpm
           
             # ===== libmemcached 1.0.18 (EL-8 SRPM) =================================
             rpm -ivh /home/builder/libmemcached-1.0.18-17.el8.src.rpm
