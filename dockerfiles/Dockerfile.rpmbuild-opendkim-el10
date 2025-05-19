@@ -1,14 +1,14 @@
 #
-# Build Firebird 4 → OpenDBX → OpenDKIM RPMs for AlmaLinux 10
+# Build libtomcrypt → Firebird 4 → OpenDBX → OpenDKIM for AlmaLinux 10
 #
 FROM almalinux/10-kitten-init
 
-# ── Repositories ────────────────────────────────────────────────
+# ─── Repositories ────────────────────────────────────────────────
 RUN dnf -y install dnf-plugins-core && \
     dnf -y config-manager --set-enabled crb && \
     dnf -y install epel-release && dnf clean all
 
-# ── Base tool-chain & common BuildRequires ─────────────────────
+# ─── Base tool-chain & common BuildRequires ──────────────────────
 RUN dnf -y groupinstall "Development Tools" && \
     dnf -y install rpm-build rpmdevtools redhat-rpm-config \
        cmake ninja-build gcc-c++ make \
@@ -17,17 +17,17 @@ RUN dnf -y groupinstall "Development Tools" && \
        libicu-devel libtommath-devel libedit-devel libxml2-devel zlib-devel \
        ncurses-devel readline-devel docbook2X doxygen \
        automake autoconf gettext gettext-devel libtool \
-       chrpath libstdc++-static libtomcrypt-devel procmail \
-       unzip sed \
+       chrpath libstdc++-static procmail unzip sed \
        systemd which curl && \
     dnf clean all
 
-# ── Non-root builder (for SRPM storage) ────────────────────────
+# ─── Non-root “builder” user (stores SRPMs) ──────────────────────
 RUN useradd -m builder && su - builder -c "rpmdev-setuptree"
 WORKDIR /home/builder
 USER builder
 
-# ── Download SRPMs we will rebuild ─────────────────────────────
-RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/f/firebird-4.0.0.2496-2.el9.src.rpm && \
+# ─── Download all SRPMs we will rebuild ──────────────────────────
+RUN curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/l/libtomcrypt-1.18.2-12.el9.src.rpm && \
+    curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/f/firebird-4.0.0.2496-2.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendbx-1.4.6-38.el9.src.rpm && \
     curl -LO https://dl.fedoraproject.org/pub/epel/9/Everything/source/tree/Packages/o/opendkim-2.11.0-0.36.el9.src.rpm
