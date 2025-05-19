@@ -32,7 +32,12 @@ jobs:
             # ===== Firebird ========================================================
             rpm -ivh /home/builder/firebird-*.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/firebird.spec
-            dnf -y install $TOPDIR/RPMS/*/firebird-{common,libs,devel}-*.rpm
+            dnf -y install \
+                  $TOPDIR/RPMS/*/firebird-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/firebird-devel-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/libfbclient2-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/libfbclient2-devel-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/libib-util-[0-9]*.rpm
 
             # ===== OpenDBX (with Firebird, without FreeTDS) ========================
             rpm -ivh /home/builder/opendbx-*.src.rpm
