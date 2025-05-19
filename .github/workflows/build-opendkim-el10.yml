@@ -43,7 +43,7 @@ jobs:
                   $TOPDIR/RPMS/*/libib-util-[0-9]*.rpm
 
             # ===== Lua 5.4 (EL-9 SRPM) =============================================
-            rpm -ivh /home/builder/lua-5.4.4-4.el9.src.rpm
+            rpm -ivh /home/builder/lua-5.4.6-7.el10.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/lua.spec
             dnf -y install \
                   $TOPDIR/RPMS/*/lua-libs-[0-9]*.rpm \
