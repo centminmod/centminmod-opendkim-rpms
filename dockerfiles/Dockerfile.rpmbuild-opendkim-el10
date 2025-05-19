@@ -16,7 +16,9 @@ RUN dnf -y groupinstall "Development Tools" && \
        mariadb-connector-c mariadb-connector-c-devel libpq-devel sqlite-devel \
        libicu-devel libtommath-devel libedit-devel libxml2-devel zlib-devel \
        ncurses-devel readline-devel docbook2X doxygen \
-       automake gettext gettext-devel libtool \
+       automake autoconf gettext gettext-devel libtool \
+       chrpath libstdc++-static libtomcrypt-devel procmail \
+       unzip sed \
        systemd which curl && \
     dnf clean all
 
