@@ -21,7 +21,10 @@ RUN dnf -y groupinstall "Development Tools" && \
        perl perl-ExtUtils-MakeMaker perl-Time-HiRes \
        libevent-devel cyrus-sasl-devel libdb-devel \
        freetds-devel \
-       systemd which curl && \
+       libtomcrypt-devel firebird firebird-devel lua selinux-policy groff policycoreutils \ 
+       memcached python-sphinx systemtap libmemcached opendbx opendbx-devel flex-static \
+       libselinux-devel libsepol-static \
+       systemd which curl --skip-broken && \
     dnf clean all
 
 # ─── Non-root “builder” user (stores SRPMs) ──────────────────────
