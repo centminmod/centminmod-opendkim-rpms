@@ -42,6 +42,22 @@ jobs:
                   $TOPDIR/RPMS/*/libfbclient2-devel-[0-9]*.rpm \
                   $TOPDIR/RPMS/*/libib-util-[0-9]*.rpm
 
+            # ===== perl-Test-Harness & perl-Test-Simple =============================
+            rpm -ivh /home/builder/perl-Test-Harness-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/perl-Test-Harness.spec
+            rpm -ivh /home/builder/perl-Test-Simple-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/perl-Test-Simple.spec
+            dnf -y install \
+                  $TOPDIR/RPMS/*/perl-Test-Harness-[0-9]*.rpm \
+                  $TOPDIR/RPMS/*/perl-Test-Simple-[0-9]*.rpm
+          
+            # ===== selinux-policy (Base policy only) ===============================
+            rpm -ivh /home/builder/selinux-policy-*.src.rpm
+            rpmbuild --define "_topdir $TOPDIR" \
+                     --without gui --without min --without mls \
+                     -ba $TOPDIR/SPECS/selinux-policy.spec
+            dnf -y install $TOPDIR/RPMS/*/selinux-policy-[0-9]*.rpm
+
             # ===== Lua 5.4 (EL-9 SRPM) =============================================
             rpm -ivh /home/builder/lua-5.4.6-7.el10.src.rpm
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/lua.spec
@@ -64,22 +80,6 @@ jobs:
             rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/systemtap.spec
             dnf -y install $TOPDIR/RPMS/*/systemtap-sdt-devel-[0-9]*.rpm
 
-            # ===== perl-Test-Harness & perl-Test-Simple =============================
-            rpm -ivh /home/builder/perl-Test-Harness-*.src.rpm
-            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/perl-Test-Harness.spec
-            rpm -ivh /home/builder/perl-Test-Simple-*.src.rpm
-            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/perl-Test-Simple.spec
-            dnf -y install \
-                  $TOPDIR/RPMS/*/perl-Test-Harness-[0-9]*.rpm \
-                  $TOPDIR/RPMS/*/perl-Test-Simple-[0-9]*.rpm
-          
-            # ===== selinux-policy (Base policy only) ===============================
-            rpm -ivh /home/builder/selinux-policy-*.src.rpm
-            rpmbuild --define "_topdir $TOPDIR" \
-                     --without gui --without min --without mls \
-                     -ba $TOPDIR/SPECS/selinux-policy.spec
-            dnf -y install $TOPDIR/RPMS/*/selinux-policy-[0-9]*.rpm
-          
             # ===== libmemcached 1.0.18 (EL-8 SRPM) =================================
             rpm -ivh /home/builder/libmemcached-1.0.18-17.el8.src.rpm
             rpmbuild --define "_topdir $TOPDIR" \
