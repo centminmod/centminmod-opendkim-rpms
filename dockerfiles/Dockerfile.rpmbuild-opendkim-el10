@@ -18,6 +18,7 @@ RUN dnf -y groupinstall "Development Tools" && \
        ncurses-devel readline-devel docbook2X doxygen \
        automake autoconf gettext gettext-devel libtool \
        chrpath libstdc++-static procmail unzip sed \
+       freetds-devel \
        systemd which curl && \
     dnf clean all
 

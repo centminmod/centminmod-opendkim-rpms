@@ -42,7 +42,7 @@ jobs:
 
             # ===== OpenDBX (with Firebird, without FreeTDS) ========================
             rpm -ivh /home/builder/opendbx-*.src.rpm
-            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendbx.spec --without freetds
+            rpmbuild --define "_topdir $TOPDIR" -ba $TOPDIR/SPECS/opendbx.spec
             dnf -y install $TOPDIR/RPMS/*/opendbx-{devel,*[0-9]}.rpm
 
             # ===== OpenDKIM ========================================================
