@@ -24,8 +24,20 @@ RUN dnf -y groupinstall "Development Tools" && \
        libtomcrypt-devel firebird firebird-devel lua lua-devel selinux-policy groff policycoreutils \ 
        memcached python-sphinx systemtap systemtap-sdt-devel libmemcached opendbx opendbx-devel flex-static \
        libselinux-devel libsepol-static selinux-policy-devel \
-       pyproject-rpm-macros python3-devel python3-test texlive-collection-fontsrecommended \ 
-       texlive-collection-latex texlive-* python3-flit-core python3-cython python3-pytest python3-* \
+       # Python (primarily for python-sphinx, adjust if other SRPMs need more/different python3 packages):
+       python3-devel python3-flit-core pyproject-rpm-macros \
+       python3-babel python3-chardet python3-docutils python3-jinja2 \
+       python3-packaging python3-pygments python3-requests \
+       python3-snowballstemmer python3-sphinxcontrib-applehelp \
+       python3-sphinxcontrib-devhelp python3-sphinxcontrib-htmlhelp \
+       python3-sphinxcontrib-jsmath python3-sphinxcontrib-qthelp \
+       python3-sphinxcontrib-serializinghtml python3-tomli \
+       python3-pytest python3-pytest-cov python3-cython python3-html5lib \
+       python3-lxml python3-sphinx-gallery python3-sphinx-rtd-theme \
+       python3-matplotlib python3-pytest-asyncio \
+       # TeX (primarily for python-sphinx):
+       texlive-scheme-basic texlive-latexrecommended texlive-latexextra \
+       texlive-xetex texlive-fontsrecommended texlive-dvipng \
        systemd which curl --skip-broken && \
     dnf clean all
 
