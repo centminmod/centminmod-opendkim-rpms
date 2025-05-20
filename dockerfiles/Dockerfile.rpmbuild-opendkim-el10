@@ -25,7 +25,7 @@ RUN dnf -y groupinstall "Development Tools" && \
        memcached python-sphinx systemtap systemtap-sdt-devel libmemcached opendbx opendbx-devel flex-static \
        libselinux-devel libsepol-static selinux-policy-devel \
        # Python (primarily for python-sphinx, adjust if other SRPMs need more/different python3 packages):
-       python3-devel python3-flit-core pyproject-rpm-macros \
+       python3-test python3-devel python3-flit-core pyproject-rpm-macros \
        python3-babel python3-chardet python3-docutils python3-jinja2 \
        python3-packaging python3-pygments python3-requests \
        python3-snowballstemmer python3-sphinxcontrib-applehelp \
@@ -36,8 +36,8 @@ RUN dnf -y groupinstall "Development Tools" && \
        python3-lxml python3-sphinx-gallery python3-sphinx-rtd-theme \
        python3-matplotlib python3-pytest-asyncio \
        # TeX (primarily for python-sphinx):
-       texlive-scheme-basic texlive-latexrecommended texlive-latexextra \
-       texlive-xetex texlive-fontsrecommended texlive-dvipng \
+       texlive-scheme-basic texlive-latexrecommended texlive-collection-latex texlive-latexextra \
+       texlive-xetex texlive-collection-fontsrecommended texlive-dvisvgm texlive-dvipng graphviz \
        systemd which curl --skip-broken && \
     dnf clean all
 
